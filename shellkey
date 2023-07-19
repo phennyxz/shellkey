@@ -1,0 +1,19 @@
+#!/bin/bash
+#shellkey
+#by: Arayjo, Wasley G.
+#email: wasleyzulu@gmail.com
+
+#select symbols
+symbol=($(echo -e \\x{2..7}{{0..9},{a..f}}|sed 's/[^[:punct:]]//g;s/*/¹/g;s/./& /g'))
+
+#select trigger syllables
+syllable=($(sha256sum <<< $1|base64|sed 's/../& /g'))
+
+#get the key information
+data=$(sha256sum <<< $1+$2+$3+$4|base64)
+pass=$data
+
+#process the replacements
+for a in $(seq 0 ${#symbol[@]});do pass=${pass//${syllable[$a]}/${symbol[$a]}};done
+
+echo $pass
